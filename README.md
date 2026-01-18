@@ -1,4 +1,4 @@
-# awg-toggle
+# WayBar Amnezia-Wireguard toggle
 
 A lightweight, high-performance **Waybar** plugin written in **Rust** for managing **AmneziaWG** (WireGuard protocol with obfuscation) connections.
 
