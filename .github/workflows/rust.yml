@@ -18,35 +18,36 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install UPX
+        run: sudo apt-get update && sudo apt-get install -y upx
+
       - name: Build release
         run: cargo build --release --locked
 
-      - name: Prepare binary and calculate hash
+      - name: Compress and Hash
         id: prepare
         run: |
           cd target/release
           BINARY_NAME="awg-toggle-linux-x86_64"
           mv awg-toggle $BINARY_NAME
           
+          upx --best --lzma $BINARY_NAME
+          
           CHECKSUM=$(sha256sum $BINARY_NAME | cut -d ' ' -f 1)
           echo "sha_hash=$CHECKSUM" >> $GITHUB_OUTPUT
-          
           echo "$CHECKSUM  $BINARY_NAME" > sha256.txt
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-
           body: |
-            ## Installation
-            Download the binary below and move it to `/usr/local/bin/`.
+            ## Optimized Release
+            This binary has been optimized for size and compressed with UPX.
             
             ## Checksums (SHA256)
             ```
             ${{ steps.prepare.outputs.sha_hash }}  awg-toggle-linux-x86_64
             ```
-            
-            Refer to README.md for full configuration instructions.
           files: |
             target/release/awg-toggle-linux-x86_64
             target/release/sha256.txt

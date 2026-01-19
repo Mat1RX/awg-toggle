@@ -1,6 +1,6 @@
 [package]
 name = "awg-toggle"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [dependencies]
@@ -10,6 +10,8 @@ dirs = "5.0"
 anyhow = "1.0"
 
 [profile.release]
-strip = true
 opt-level = "z"
 lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
