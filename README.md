@@ -38,7 +38,11 @@ sudo chmod 755 /usr/local/bin/wg-toggle
 ```
 
 ---
+## Settings
 
+The application uses the WG_CONFIG_DIR environment variable to locate your AmneziaWG configuration files. If not provided, it defaults to /etc/amnezia/amneziawg.
+
+---
 ## Security Configuration
 
 Managing network interfaces requires root privileges. To allow members of the **wheel** group to run this plugin without a password prompt, choose **one** of the following methods:
