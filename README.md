@@ -7,7 +7,7 @@ A lightweight, high-performance **Waybar** plugin written in **Rust** for managi
 ## Features
 
 * **Quick Toggle:** Turn the currently selected VPN on or off with a left-click.
-* **Config Cycling:** Easily switch between different `.conf` files in `/etc/amnezia/amneziawg/` using the mouse wheel or right-click.
+* **Config Cycling:** Easily switch between different `.conf` files in `/etc/amnezia/amneziawg/` (or another directory specified in env `WG_CONFIG_DIR`) using the mouse wheel or right-click.
 * **JSON Output:** Native Waybar integration with support for tooltips, text icons, and CSS classes.
 * **Secure:** Designed to run with minimal elevated privileges using specific system policies.
 
@@ -40,7 +40,7 @@ sudo chmod 755 /usr/local/bin/wg-toggle
 ---
 ## Settings
 
-The application uses the WG_CONFIG_DIR environment variable to locate your AmneziaWG configuration files. If not provided, it defaults to /etc/amnezia/amneziawg.
+The application uses the WG_CONFIG_DIR environment variable to locate your AmneziaWG configuration files. If not provided, it defaults to `/etc/amnezia/amneziawg`.
 
 ---
 ## Security Configuration
