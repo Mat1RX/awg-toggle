@@ -1,12 +1,16 @@
 use anyhow::{Context, Result};
 use serde::Serialize;
 use std::env;
+use std::sync::LazyLock;
 use std::fs;
 use std::path::{PathBuf};
 use std::process::{Command, Stdio};
 
-// Путь к конфигам AmneziaWG
-const WG_CONFIG_DIR: &str = "/etc/amnezia/amneziawg";
+//Init WG_CONFIG_DIR from enviroment
+static WG_CONFIG_DIR: LazyLock<String> = LazyLock::new(|| {
+    std::env::var("WG_CONFIG_DIR")
+        .unwrap_or_else(|_| "/etc/amnezia/amneziawg".to_string())
+});
 
 #[derive(Serialize)]
 struct WaybarOutput {
@@ -52,8 +56,8 @@ fn get_state_path() -> PathBuf {
 
 fn get_available_configs() -> Result<Vec<String>> {
     let mut configs = Vec::new();
-    let entries = fs::read_dir(WG_CONFIG_DIR)
-        .context(format!("Не удалось прочитать {}", WG_CONFIG_DIR))?;
+    let entries = fs::read_dir(&*WG_CONFIG_DIR)
+        .context(format!("Не удалось прочитать {}", *WG_CONFIG_DIR))?;
 
     for entry in entries {
         let entry = entry?;
@@ -128,15 +132,17 @@ fn toggle_vpn() -> Result<()> {
     let state = State::load();
 
     if let Some(active_name) = active {
+        let config_path = format!("{}/{}.conf", *WG_CONFIG_DIR, active_name);
         Command::new("sudo")
-            .args(["awg-quick", "down", &active_name])
+            .args(["awg-quick", "down", &config_path])
             .stdout(Stdio::null()) // Глушим вывод
             .stderr(Stdio::null()) // Глушим ошибки
             .status()?;
     } else {
         if !state.selected_config.is_empty() {
+            let config_path = format!("{}/{}.conf", *WG_CONFIG_DIR, state.selected_config);
             Command::new("sudo")
-                .args(["awg-quick", "up", &state.selected_config])
+                .args(["awg-quick", "up", &config_path])
                 .stdout(Stdio::null()) // Глушим вывод
                 .stderr(Stdio::null()) // Глушим ошибки
                 .status()?;
@@ -167,14 +173,16 @@ fn cycle_config(direction: i32) -> Result<()> {
     state.save()?;
 
     if let Some(active_name) = active {
+        let config_path_active = format!("{}/{}.conf", *WG_CONFIG_DIR, active_name);
+        let config_path_new = format!("{}/{}.conf", *WG_CONFIG_DIR, new_config);
         Command::new("sudo")
-            .args(["awg-quick", "down", &active_name])
+            .args(["awg-quick", "down", &config_path_active])
             .stdout(Stdio::null())
             .stderr(Stdio::null())
             .status()?;
 
         Command::new("sudo")
-            .args(["awg-quick", "up", &new_config])
+            .args(["awg-quick", "up", &config_path_new])
             .stdout(Stdio::null())
             .stderr(Stdio::null())
             .status()?;
