@@ -1,15 +1,14 @@
 use anyhow::{Context, Result};
 use serde::Serialize;
 use std::env;
-use std::sync::LazyLock;
 use std::fs;
-use std::path::{PathBuf};
+use std::path::PathBuf;
 use std::process::{Command, Stdio};
+use std::sync::LazyLock;
 
 //Init WG_CONFIG_DIR from enviroment
 static WG_CONFIG_DIR: LazyLock<String> = LazyLock::new(|| {
-    std::env::var("WG_CONFIG_DIR")
-        .unwrap_or_else(|_| "/etc/amnezia/amneziawg".to_string())
+    std::env::var("WG_CONFIG_DIR").unwrap_or_else(|_| "/etc/amnezia/amneziawg".to_string())
 });
 
 #[derive(Serialize)]
@@ -77,7 +76,7 @@ fn get_active_interface() -> Option<String> {
     // Но stderr лучше заглушить на случай ошибок прав доступа.
     let output = Command::new("sudo")
         .args(["awg", "show", "interfaces"])
-        .stderr(Stdio::null()) 
+        .stderr(Stdio::null())
         .output()
         .ok()?;
 
@@ -110,7 +109,10 @@ fn handle_status() -> Result<()> {
         None => (
             format!(" {}", state.selected_config),
             "disconnected".to_string(),
-            format!("AmneziaWG Disconnected. Selected: {}", state.selected_config),
+            format!(
+                "AmneziaWG Disconnected. Selected: {}",
+                state.selected_config
+            ),
             "disconnected".to_string(),
         ),
     };
@@ -167,7 +169,7 @@ fn cycle_config(direction: i32) -> Result<()> {
 
     let len = configs.len() as i32;
     let new_index = (current_index as i32 + direction).rem_euclid(len) as usize;
-    
+
     let new_config = configs[new_index].clone();
     state.selected_config = new_config.clone();
     state.save()?;
@@ -197,7 +199,7 @@ fn main() -> Result<()> {
 
     if args.len() < 2 {
         toggle_vpn()?;
-        handle_status()?; 
+        handle_status()?;
         return Ok(());
     }
 
