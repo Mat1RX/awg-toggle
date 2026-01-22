@@ -12,33 +12,66 @@ A lightweight, high-performance **Waybar** plugin written in **Rust** for managi
 * **Secure:** Designed to run with minimal elevated privileges using specific system policies.
 
 ---
-
 ## Installation
 
-### 1. Build the binary
+### 1. Install from AUR
 
-Ensure you have the Rust toolchain (Cargo) installed.
+If you are using Arch Linux, the easiest way is to use an AUR helper like `yay` or `paru`. This method automatically handles dependencies and sets up Polkit rules.
 
 ```bash
-git clone https://github.com/Mat1RX/awg-toggle.git
-cd awg-toggle
+# Using yay
+yay -S waybar-awg-toggle-git
+
+# Or using paru
+paru -S waybar-awg-toggle-git
+
+```
+
+### 2. Install from Releases (Pre-compiled Binaries)
+
+For a quick setup without compiling, you can download the latest binary directly from GitHub.
+
+1. Download the latest release from the [Releases page](https://github.com/Mat1RX/waybar-awg-toggle/releases).
+2. Make it executable and move it to your path:
+
+```bash
+chmod +x awg-toggle
+sudo mv awg-toggle /usr/bin/
+
+```
+
+3. *(Optional)* Manually install the Polkit rules found in the `10-awg-toggle.rules` file to `/etc/polkit-1/rules.d/` if you want to manage connections without `sudo`.
+
+### 3. Install from Sources
+
+Use this method if you want to build the project yourself or contribute to development.
+
+#### A. Build the binary
+
+Ensure you have the Rust toolchain (**Cargo**) installed.
+
+```bash
+git clone https://github.com/Mat1RX/waybar-awg-toggle.git
+cd waybar-awg-toggle
 cargo build --release
 
 ```
 
-### 2. System Deployment
+The compiled binary will be located at `target/release/awg-toggle`.
 
-Move the binary to a system path and set the correct ownership to ensure security:
+#### B. Manual System Installation
+
+To install the binary and Polkit rules manually into your system:
 
 ```bash
-sudo cp target/release/wg-toggle /usr/local/bin/wg-toggle
-sudo chown root:root /usr/local/bin/wg-toggle
-sudo chmod 755 /usr/local/bin/wg-toggle
+# Install binary
+sudo install -Dm755 target/release/awg-toggle /usr/bin/awg-toggle
 
+# Install Polkit rules (optional, recommended)
+sudo install -Dm644 10-awg-toggle.rules /etc/polkit-1/rules.d/10-awg-toggle.rules
 ```
-
 ---
-## Settings
+## Configuration
 
 The application uses the WG_CONFIG_DIR environment variable to locate your AmneziaWG configuration files. If not provided, it defaults to `/etc/amnezia/amneziawg`.
 
